@@ -1,12 +1,14 @@
 #pragma once
 
 #include "../src/Generator.hpp"
+#include "../src/Schema.hpp"
 
 namespace stq {
 
-    auto random() -> Generator<>
+    template <typename T, typename Schema>
+    auto random (Schema&& schema) -> T
     {
-        return {};
+        return Generator<T>{}(std::forward<Schema>(schema));
     }
 
 }

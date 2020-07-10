@@ -2,25 +2,7 @@
 
 #include <type_traits>
 
-namespace stq::detail {
-
-    template <typename T, template <typename...> typename Template>
-    inline constexpr bool is_template_instantiation = false;
-
-    template <typename... Params, template <typename...> typename Template>
-    inline constexpr bool is_template_instantiation <Template <Params...>, Template> = true;
-
-    template <typename T, template <typename...> typename... Templates>
-    inline constexpr bool is_some_template_instantiation_of = (is_template_instantiation <T, Templates> || ...);
-
-//    template <typename T>
-//    inline constexpr bool is_string = std::is_same_v<T, std::string>
-//    || std::is_same_v<T, std::string_view>
-//    || std::is_same_v<T, const char*>;
-//
-//
-//    template <std::size_t N>
-//    inline constexpr bool is_string <char[N]> = true;
+namespace stq::detail::trait {
 
     template <typename T, typename = void>
     inline constexpr bool has_push_back = false;
@@ -46,7 +28,6 @@ namespace stq::detail {
             std::is_same<decltype(std::declval<Container>().operator[](std::declval<typename Container::size_type>())),
                     typename Container::reference>>> = true;
 
-
     template<typename T, typename = void>
     inline constexpr bool is_reservable = false;
 
@@ -55,7 +36,13 @@ namespace stq::detail {
             decltype(std::declval<T>().reserve(std::declval<typename T::size_type>()))
     >> = true;
 
+    template<typename T, typename = void>
+    inline constexpr bool is_resizable = false;
 
+    template<typename T>
+    inline constexpr bool is_resizable<T, std::void_t<
+            decltype(std::declval<T>().resize(std::declval<typename T::size_type>()))
+    >> = true;
 
     template <typename T, typename = void>
     inline constexpr bool is_container = std::is_array_v<T>;
@@ -70,9 +57,9 @@ namespace stq::detail {
     template <typename T>
     inline constexpr bool is_container <T,
             std::void_t<
-                    std::void_t<typename T::value_type>,
-                    std::void_t<decltype(std::declval<T>().begin())>,
-                    std::void_t<decltype(std::declval<T>().end())>>
+                    typename T::value_type,
+                    decltype(std::declval<T>().begin()),
+                    decltype(std::declval<T>().end())>
     > = true;
 
 
@@ -88,9 +75,17 @@ namespace stq::detail {
     template <typename T, std::size_t N>
     inline constexpr std::size_t size_of_static_container <T[N]> = N;
 
-
     template <typename T>
     inline constexpr bool is_dynamic_container = is_container<T> && !is_static_container<T>;
+
+    template <typename T, typename = void>
+    inline constexpr bool is_container_adapter = false;
+
+    template <typename T>
+    inline constexpr bool is_container_adapter<T, std::void_t<
+                    typename T::container_type,
+                    std::enable_if_t<is_container<typename T::container_type>
+                    >>> = true;
 
 };
 
