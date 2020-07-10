@@ -9,7 +9,17 @@ namespace stq::detail::trait {
 
     template <typename T>
     inline constexpr auto has_push_back<T, std::void_t<
-                    decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))
+                    decltype(std::declval<std::remove_cv_t<T>>().push_back(
+                            std::declval<typename std::remove_cv_t<T>::value_type>()))
+    >> = true;
+
+    template <typename T, typename = void>
+    inline constexpr bool has_push_front = false;
+
+    template <typename T>
+    inline constexpr auto has_push_front<T, std::void_t<
+            decltype(std::declval<std::remove_cv_t<T>>().push_front(
+                    std::declval<typename std::remove_cv_t<T>::value_type>()))
     >> = true;
 
     template <typename T, typename = void>
@@ -17,7 +27,8 @@ namespace stq::detail::trait {
 
     template <typename T>
     inline constexpr auto has_insert<T, std::void_t<
-                decltype(std::declval<T>().insert(std::declval<typename T::value_type>()))
+                decltype(std::declval<std::remove_cv_t<T>>().insert(
+                        std::declval<typename std::remove_cv_t<T>::value_type>()))
     >> = true;
 
     template <typename Container, typename = void>
@@ -25,24 +36,28 @@ namespace stq::detail::trait {
 
     template <typename Container>
     inline constexpr bool is_random_index_assignable<Container, std::void_t<
-            std::is_same<decltype(std::declval<Container>().operator[](std::declval<typename Container::size_type>())),
-                    typename Container::reference>>> = true;
+            std::is_same<decltype(std::declval<std::remove_cv_t<Container>>().operator[](
+                    std::declval<typename std::remove_cv_t<Container>::size_type>())),
+                        typename std::remove_cv_t<Container>::reference>>> = true;
 
     template<typename T, typename = void>
     inline constexpr bool is_reservable = false;
 
     template<typename T>
     inline constexpr bool is_reservable<T, std::void_t<
-            decltype(std::declval<T>().reserve(std::declval<typename T::size_type>()))
+            decltype(std::declval<std::remove_cv_t<T>>().reserve(std::declval<typename std::remove_cv_t<T>::size_type>()))
     >> = true;
+
 
     template<typename T, typename = void>
     inline constexpr bool is_resizable = false;
 
     template<typename T>
     inline constexpr bool is_resizable<T, std::void_t<
-            decltype(std::declval<T>().resize(std::declval<typename T::size_type>()))
+            decltype(std::declval<std::remove_cv_t<T>>().resize(
+                    std::declval<typename std::remove_cv_t<T>::size_type>()))
     >> = true;
+
 
     template <typename T, typename = void>
     inline constexpr bool is_container = std::is_array_v<T>;
@@ -57,9 +72,9 @@ namespace stq::detail::trait {
     template <typename T>
     inline constexpr bool is_container <T,
             std::void_t<
-                    typename T::value_type,
-                    decltype(std::declval<T>().begin()),
-                    decltype(std::declval<T>().end())>
+                    typename std::remove_cv_t<T>::value_type,
+                    decltype(std::declval<std::remove_cv_t<T>>().begin()),
+                    decltype(std::declval<std::remove_cv_t<T>>().end())>
     > = true;
 
 
@@ -83,8 +98,8 @@ namespace stq::detail::trait {
 
     template <typename T>
     inline constexpr bool is_container_adapter<T, std::void_t<
-                    typename T::container_type,
-                    std::enable_if_t<is_container<typename T::container_type>
+                    typename std::remove_cv_t<T>::container_type,
+                    std::enable_if_t<is_container<typename std::remove_cv_t<T>::container_type>
                     >>> = true;
 
 };

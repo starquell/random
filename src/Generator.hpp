@@ -8,6 +8,8 @@
 #include <optional>
 #include <random>
 #include <functional>
+#include <set>
+#include <complex>
 
 namespace stq {
 
@@ -78,21 +80,30 @@ namespace stq {
     };
 
     template <typename T>
+    struct Generator<T, std::enable_if_t<std::is_reference_v<T>>> {
+
+        static_assert(detail::always_false<T>, "Reference is not an object");
+    };
+
+    template <typename T>
     struct Generator<T, std::enable_if_t<detail::trait::is_container<T>>> {
 
+        using ContainerT = std::remove_cv_t<T>;
+
         template <typename Schema>
-        auto operator() (Schema&& schema) -> T
+        auto operator() (Schema&& schema) -> ContainerT
         {
-            static_assert(detail::trait::is_template_instantiation<Schema, Container>);
+            static_assert(detail::trait::is_template_instantiation<Schema, Container>,
+                          "Schema for container should be instance of Container");
 
             if constexpr (detail::trait::has_push_back <T>) {
-                return random_push_backable<T>(std::forward<Schema>(schema));
+                return random_push_backable(std::forward<Schema>(schema));
             }
             else if constexpr (detail::trait::has_insert <T>) {
-                return random_insertable<T>(std::forward<Schema>(schema));
+                return random_insertable(std::forward<Schema>(schema));
             }
             else if constexpr (detail::trait::is_random_index_assignable <T>) {
-                return random_index_assignable<T>(std::forward<Schema>(schema));
+                return random_index_assignable(std::forward<Schema>(schema));
             }
             else {
                 static_assert(detail::always_false <T>, "Random is not implemented for this type");
@@ -101,44 +112,76 @@ namespace stq {
 
     private:
 
-        template <typename Container, typename Schema>
-        static auto random_push_backable(Schema&& schema) -> Container
+        template <typename Schema>
+        static auto random_push_backable(Schema&& schema) -> ContainerT
         {
-            Container cont;
-            if constexpr (detail::trait::is_reservable <Container>) {
+            ContainerT cont;
+
+            if constexpr (detail::trait::is_reservable <ContainerT>) {
                 cont.reserve(schema.size());
             }
 
             for (auto i = 0; i < schema.size(); ++i) {
-                cont.push_back(random<typename Container::value_type>(schema.value()));
+                cont.push_back(random<typename ContainerT::value_type>(schema.value()));
             }
             return cont;
         }
 
-        template <typename Container, typename Schema>
-        static auto random_insertable(Schema&& schema) -> Container
+        template <typename Schema>
+        static auto random_push_frontable(Schema&& schema) -> ContainerT
         {
-            Container cont;
+            ContainerT cont;
+            if constexpr (detail::trait::is_reservable <ContainerT>) {
+                cont.reserve(schema.size());
+            }
+
             for (auto i = 0; i < schema.size(); ++i) {
-                cont.insert(random<typename Container::value_type>(schema.value()));
+                cont.push_front(random<typename ContainerT::value_type>(schema.value()));
             }
             return cont;
         }
 
-        template <typename Container, typename Schema>
-        static auto random_index_assignable(Schema&& schema) -> Container
+        template <typename Schema>
+        static auto random_insertable(Schema&& schema) -> ContainerT
         {
-            std::remove_const_t<Container> cont;
-            if constexpr (detail::trait::is_resizable<Container>) {
+            ContainerT cont;
+            if constexpr (detail::trait::is_reservable <ContainerT>) {
+                cont.reserve(schema.size());
+            }
+
+            for (auto i = 0; i < schema.size(); ++i) {
+                cont.insert(random<typename ContainerT::value_type>(schema.value()));
+            }
+            return cont;
+        }
+
+        template <typename Schema>
+        static auto random_index_assignable(Schema&& schema) -> ContainerT
+        {
+            ContainerT cont;
+            if constexpr (detail::trait::is_resizable<ContainerT>) {
                 cont.resize(schema.size());
             }
 
             for (auto i = 0; i < schema.size(); ++i) {
-                cont[i] = random<typename Container::value_type>(schema.value());
+                cont[i] = random<typename ContainerT::value_type>(schema.value());
             }
             return cont;
         }
     };
+
+    template <typename T>
+    struct Generator <T, std::enable_if_t<detail::trait::is_container_adapter<T>>> {
+
+        using ContainerT = std::remove_cv_t<T>;
+
+        template <typename Schema>
+        auto operator() (Schema&& schema) -> ContainerT
+        {
+            return ContainerT (random<typename ContainerT::container_type>(std::forward<Schema>(schema)));
+        }
+    };
+
 
     template <typename T, typename U>
     struct Generator<std::pair<T, U>> {
@@ -183,12 +226,15 @@ namespace stq {
         template <typename Schema>
         auto operator() (Schema&& schema) -> std::variant<Ts...>
         {
+            static_assert(detail::trait::is_template_instantiation<Schema, Compound>,
+                          "Schema for std::variant should be Compound");
+
             const auto choice = random<std::size_t> (
                     Arithmetic{std::uniform_int_distribution{std::size_t{0}, sizeof...(Ts)}}
             );
 
             const auto types = std::tuple {TypeWrapper<Ts>{}...};
-            auto types_and_schemas = detail::zip(types, schema.values());
+            const auto types_and_schemas = detail::zip(types, schema.values());
 
             std::variant <Ts...> variant;
 
@@ -196,19 +242,19 @@ namespace stq {
                 variant = random <typename std::decay_t<decltype(type_and_schema.first)>::type> (type_and_schema.second);
             };
 
-            invoke_with_nth_elem<decltype(assign_random), 0>(assign_random, types_and_schemas, choice);
+            invoke_with_nth_elem(assign_random, types_and_schemas, choice);
             return variant;
         }
 
     private:
-        template <typename Func, std::size_t I, typename... Args>
+        template <std::size_t I = 0, typename Func, typename... Args>
         static void invoke_with_nth_elem (const Func& func, const std::tuple<Args...>& tuple, std::size_t n) {
 
             if (n == I) {
                 func(std::get<I>(tuple));
             }
             if constexpr (I + 1 < sizeof...(Args)) {
-                invoke_with_nth_elem<Func, I + 1, Args...>(func, tuple, n);
+                invoke_with_nth_elem<I + 1>(func, tuple, n);
             }
         }
 
@@ -217,5 +263,38 @@ namespace stq {
             using type = T;
         };
     };
+
+    template <typename T>
+    struct Generator<std::optional<T>> {
+
+        template <typename Schema>
+        auto operator() (Schema&& schema) -> std::optional<T>
+        {
+            return random<T>(std::forward<Schema>(schema));
+        }
+    };
+
+    template <typename T>
+    struct Generator <std::complex<T>> {
+
+        template <typename Schema>
+        auto operator() (Schema&& schema) -> std::complex<T>
+        {
+            return std::complex {
+                random<T>(std::get<0>(std::forward<Schema>(schema))),
+                random<T>(std::get<1>(std::forward<Schema>(schema)))
+            };
+        }
+    };
+
+    template <typename T>
+    struct Generator <std::atomic<T>> {
+
+        template<typename Schema>
+        auto operator()(Schema &&schema) -> std::atomic<T> {
+            return std::atomic{random<T>(std::get<0>(std::forward<Schema>(schema)))};
+        }
+    };
+
 
 }

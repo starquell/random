@@ -23,4 +23,5 @@ namespace stq::detail::trait {
 
     template <typename T, template <typename...> typename... Templates>
     inline constexpr bool is_some_template_instantiation_of = (is_template_instantiation <T, Templates> || ...);
+
 }

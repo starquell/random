@@ -2,28 +2,30 @@
 
 #include <iostream>
 #include <map>
+#include <stack>
+#include <queue>
 
 int main () {
 
-//    auto vec = stq::random<
-//            std::vector<std::variant<double, std::string, int>>>
-//            (
-//                    stq::Container{
-//                        stq::Compound{
-//                            stq::Arithmetic{std::normal_distribution{}},
-//                            stq::Container{
-//                                stq::Arithmetic{},
-//                                5
-//                                },
-//                            stq::Arithmetic{std::uniform_int_distribution{34, 42}}
-//                        },
-//                        100
-//                    }
-//            );
-//
-//    for (const auto& i : vec) {
-//        std::visit([](auto a) { std::cout << a << std::endl; }, i);
-//    }
+    auto vec = stq::random<
+            std::vector<std::variant<double, std::string, int>>>
+            (
+                    stq::Container{
+                        stq::Compound{
+                            stq::Arithmetic{std::normal_distribution{}},
+                            stq::Container{
+                                stq::Arithmetic{},
+                                5
+                                },
+                            stq::Arithmetic{std::uniform_int_distribution{34, 42}}
+                        },
+                        100
+                    }
+            );
+
+    for (const auto& i : vec) {
+        std::visit([](auto a) { std::cout << a << std::endl; }, i);
+    }
 
     const auto str = stq::random<std::string>(
                 stq::Container {
@@ -65,7 +67,41 @@ int main () {
                 stq::Arithmetic{std::normal_distribution{0.0, 100.0}}
             );
 
-    std::cout << "\n\n\n" << *smart_ptr;
+    std::cout << "\n\n\n" << *smart_ptr << "\n\n\n";
+
+
+    auto stack = stq::random<std::stack<int>>(
+                stq::Container {
+                    stq::Arithmetic{},
+                    10
+                }
+            );
+
+    while (!stack.empty()) {
+        std::cout << stack.top() << std::endl;
+        stack.pop();
+    }
+
+    std::cout << "\n\n\n";
+
+    auto queue = stq::random<std::queue<int>>(
+                  stq::Container {
+                       stq::Arithmetic{},
+                       10
+                }
+    );
+
+    while (!queue.empty()) {
+        std::cout << queue.front() << std::endl;
+        queue.pop();
+    }
+
+    auto error = stq::random<std::add_lvalue_reference_t<std::vector<int>>>(
+                stq::Container {
+                    stq::Arithmetic{},
+                    10
+                }
+            );
 
 
     return 0;

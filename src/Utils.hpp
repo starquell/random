@@ -10,6 +10,7 @@ namespace stq::detail {
     template <typename...>
     inline constexpr auto always_false = false;
 
+
     template <typename... LhsTs, typename... RhsTs, std::size_t... Indexes>
     auto zip_impl (const std::tuple<LhsTs...>& lhs,
                    const std::tuple<RhsTs...>& rhs,
@@ -24,6 +25,8 @@ namespace stq::detail {
     auto zip (const std::tuple<LhsTs...>& lhs, const std::tuple<RhsTs...>& rhs)
                                     -> std::tuple <std::pair <LhsTs, RhsTs>...>
     {
+        static_assert(sizeof...(LhsTs) == sizeof...(RhsTs),
+                      "Tuples have different length.");
         return zip_impl(lhs, rhs, std::make_index_sequence<sizeof...(LhsTs)>{});
     }
 
