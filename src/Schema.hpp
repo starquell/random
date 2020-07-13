@@ -1,23 +1,27 @@
 #pragma once
 
 #include "Utils.hpp"
+#include "TypeTraits/GeneralTraits.hpp"
 
 #include <variant>
 
 namespace stq {
 
+    /**
+     *  @brief Represents schema for built-in arithmetic types that distributes by dist for random generator
+     */
     template <typename Distribution = detail::NoDistribution>
     struct Arithmetic {
 
-        explicit Arithmetic() = default;
+        explicit constexpr Arithmetic() = default;
 
-        explicit Arithmetic(Distribution&& dist)
+        explicit constexpr Arithmetic(Distribution&& dist)
             : _dist{dist}
         {}
 
         using Dist = Distribution;
 
-        auto distribution() const noexcept -> Distribution
+        constexpr auto distribution() const noexcept -> Distribution
         {
             return _dist;
         }
@@ -26,21 +30,24 @@ namespace stq {
         Distribution _dist{};
     };
 
+    /**
+     *  @brief Represents schema for STL-like containers and C arrays for random generator
+     */
     template <typename Value>
     class Container {
     public:
 
-        explicit Container (Value&& value, std::size_t size)
+        explicit constexpr Container (Value&& value, std::size_t size)
             : _value{value},
               _size{size}
         {}
 
-        auto value() const noexcept -> const Value&
+        constexpr auto value() const noexcept -> const Value&
         {
             return _value;
         }
 
-        auto size() const noexcept -> std::size_t
+        constexpr auto size() const noexcept -> std::size_t
         {
             return _size;
         }
@@ -50,16 +57,18 @@ namespace stq {
         std::size_t _size{};
     };
 
-
+    /**
+     *  @brief Represents schema for objects with nested objects, like std::pair, std::tuple, std::variant
+     */
     template <typename... Values>
     class Compound {
     public:
 
-        explicit Compound(Values&&... values)
+        explicit constexpr Compound(Values&&... values)
                 : _values{values...}
         {}
 
-        auto values() const noexcept -> const std::tuple<Values...>&
+        constexpr auto values() const noexcept -> const std::tuple<Values...>&
         {
             return _values;
         }
@@ -68,4 +77,8 @@ namespace stq {
         std::tuple<Values...> _values;
     };
 
+    /**
+     *  @brief Used for generation default schema for some type
+     */
+    class Default {};
 }

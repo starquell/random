@@ -60,7 +60,7 @@ namespace stq::detail::trait {
 
 
     template <typename T, typename = void>
-    inline constexpr bool is_container = std::is_array_v<T>;
+    inline constexpr bool is_container = false;
 
     template <typename T, typename = void>
     inline constexpr bool is_static_container = false;

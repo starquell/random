@@ -8,13 +8,15 @@
 #include <optional>
 #include <random>
 #include <functional>
-#include <set>
 #include <complex>
 
 namespace stq {
 
     template <typename T, typename Schema>
     auto random(Schema&& schema) -> T;
+
+    template <typename T>
+    auto random() -> T;
 
     template <typename T, typename = void>
     struct Generator {
@@ -62,7 +64,7 @@ namespace stq {
         auto operator() (Schema&& schema) -> T
         {
             return T {new typename T::element_type {
-                    random<typename T::element_type>(std::forward<Schema>(schema))
+                    random<typename T::element_type>(std::get<0>(schema.values()))
             }};
         }
     };
@@ -74,7 +76,7 @@ namespace stq {
         auto operator() (Schema&& schema) -> T
         {
             return new std::remove_pointer_t<T> {
-                random<std::remove_pointer_t<T>>(std::forward<Schema>(schema))
+                random<std::remove_pointer_t<T>>(std::get<0>(schema.values()))
             };
         }
     };
@@ -82,8 +84,15 @@ namespace stq {
     template <typename T>
     struct Generator<T, std::enable_if_t<std::is_reference_v<T>>> {
 
-        static_assert(detail::always_false<T>, "Reference is not an object");
+        static_assert(detail::always_false<T>, "Cannot create random reference.");
     };
+
+    template <typename T>
+    struct Generator <T, std::enable_if_t<std::is_array_v<T>>> {
+
+        static_assert(detail::always_false<T>, "Use containers for arrays");
+    };
+
 
     template <typename T>
     struct Generator<T, std::enable_if_t<detail::trait::is_container<T>>> {
@@ -270,7 +279,7 @@ namespace stq {
         template <typename Schema>
         auto operator() (Schema&& schema) -> std::optional<T>
         {
-            return random<T>(std::forward<Schema>(schema));
+            return random<T>(std::get<0>(std::forward<Schema>(schema)));
         }
     };
 
@@ -295,6 +304,5 @@ namespace stq {
             return std::atomic{random<T>(std::get<0>(std::forward<Schema>(schema)))};
         }
     };
-
 
 }

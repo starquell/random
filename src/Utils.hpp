@@ -12,7 +12,7 @@ namespace stq::detail {
 
 
     template <typename... LhsTs, typename... RhsTs, std::size_t... Indexes>
-    auto zip_impl (const std::tuple<LhsTs...>& lhs,
+    constexpr auto zip_impl (const std::tuple<LhsTs...>& lhs,
                    const std::tuple<RhsTs...>& rhs,
                    std::index_sequence<Indexes...>) -> std::tuple <std::pair <LhsTs, RhsTs>...>
     {
@@ -22,7 +22,7 @@ namespace stq::detail {
     }
 
     template <typename... LhsTs, typename... RhsTs>
-    auto zip (const std::tuple<LhsTs...>& lhs, const std::tuple<RhsTs...>& rhs)
+    constexpr auto zip (const std::tuple<LhsTs...>& lhs, const std::tuple<RhsTs...>& rhs)
                                     -> std::tuple <std::pair <LhsTs, RhsTs>...>
     {
         static_assert(sizeof...(LhsTs) == sizeof...(RhsTs),
