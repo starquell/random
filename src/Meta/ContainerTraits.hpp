@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-namespace stq::detail::trait {
+namespace strq::detail::trait {
 
     template <typename T, typename = void>
     inline constexpr bool has_push_back = false;

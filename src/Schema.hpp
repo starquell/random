@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Utils.hpp"
-#include "TypeTraits/GeneralTraits.hpp"
+#include "Meta/GeneralTraits.hpp"
 
 #include <variant>
 
-namespace stq {
+namespace strq {
 
     /**
      *  @brief Represents schema for built-in arithmetic types that distributes by dist for random generator

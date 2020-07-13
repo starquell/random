@@ -5,7 +5,7 @@
 #include "../src/DefaultSchema.hpp"
 #include "../src/NormalizedSchema.hpp"
 
-namespace stq {
+namespace strq {
 
     template <typename T, typename Schema>
     auto random(Schema&& schema) -> T

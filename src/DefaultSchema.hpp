@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TypeTraits/GeneralTraits.hpp"
+#include "Meta/GeneralTraits.hpp"
 #include "Schema.hpp"
 
-namespace stq::detail {
+namespace strq::detail {
 
     static constexpr std::size_t DEFAULT_CONTAINER_SIZE = 1;
 

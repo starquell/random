@@ -1,7 +1,7 @@
 #pragma once
 
-#include "TypeTraits/GeneralTraits.hpp"
-#include "TypeTraits/ContainerTraits.hpp"
+#include "Meta/GeneralTraits.hpp"
+#include "Meta/ContainerTraits.hpp"
 #include "Utils.hpp"
 #include "Schema.hpp"
 
@@ -10,7 +10,7 @@
 #include <functional>
 #include <complex>
 
-namespace stq {
+namespace strq {
 
     template <typename T, typename Schema>
     auto random(Schema&& schema) -> T;

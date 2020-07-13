@@ -2,9 +2,9 @@
 
 #include "DefaultSchema.hpp"
 #include "Schema.hpp"
-#include "TypeTraits/GeneralTraits.hpp"
+#include "Meta/GeneralTraits.hpp"
 
-namespace stq::detail {
+namespace strq::detail {
 
     template <typename DefaultSchema, typename UserSchema>
     constexpr auto normalized_impl (DefaultSchema&& default_schema, UserSchema&& user_schema) {

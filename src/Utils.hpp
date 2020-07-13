@@ -3,7 +3,7 @@
 #include <utility>
 #include <tuple>
 
-namespace stq::detail {
+namespace strq::detail {
 
     struct NoDistribution{};
 

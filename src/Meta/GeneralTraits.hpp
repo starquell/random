@@ -4,7 +4,7 @@
 #include "PointerTraits.hpp"
 
 
-namespace stq::detail::trait {
+namespace strq::detail::trait {
 
     template <typename T, template <typename...> typename Template>
     inline constexpr bool is_template_instantiation = false;

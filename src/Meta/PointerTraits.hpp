@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace stq::detail::trait {
+namespace strq::detail::trait {
 
     namespace smart_ptr {
 
