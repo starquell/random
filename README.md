@@ -24,8 +24,7 @@ Also it can work with any STL-like container (that have `begin()`, `end()`, nest
 ```c++
    const auto vector = strq::random<std::vector<int>>();
    const auto map = strq::random<std::map<int, double>>();
-   const auto set = strq::random<std::unordered_set<std::size_t, 
-                                                    std::pair<int, int>>>();
+   const auto set = strq::random<std::unordered_set<std::pair<int, int>>>();
    const auto flat_map = strq::random<boost::container::flat_map<int, int>>();
 ```
 
