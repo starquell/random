@@ -1,7 +1,15 @@
 # random
-Header-only library for generating containers with random values and other STL-like random structures
 
-For usage just include `include/Random.hpp`. Requires `C++17`.
+
+Header-only library for generating containers with random values and other STL-like random data structures.
+___
+For usage just include `include/Random.hpp`. Requires `C++17` .
+
+ - GCC 9: [![Build Status](https://travis-ci.com/starquell/random.svg?branch=master)](https://travis-ci.com/starquell/random)
+  - Clang 7: [![Build Status](https://travis-ci.com/starquell/random.svg?branch=master)](https://travis-ci.com/starquell/random)
+  - MSVC 17: [![Build status](https://ci.appveyor.com/api/projects/status/i5o9ietlqm0hvyc0?svg=true)](https://ci.appveyor.com/project/starquell/random)
+
+___
 
 With this library you can various objects with random data.
 Let's start from easy level:
