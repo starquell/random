@@ -3,7 +3,7 @@ Header-only library for generating containers with random values and other STL-l
 
 For usage just include `include/Random.hpp`. Requires `C++17`.
 
-With this library you can various structures with random data.
+With this library you can various objects with random data.
 Let's start from easy level:
 ``` c++
    const auto integer = strq::random<int>();
@@ -22,7 +22,7 @@ Also it can work with any STL-like container (that have `begin()`, `end()`, nest
 ```
 
 In all these examples containers will contain some random objects of their `value_type`.
-You can manually set size of containers and distrubitions of arithmetic types using `Schema`.
+You can manually set size of containers and distributions of arithmetic types using `Schema`.
 
 ### Schemas
 
