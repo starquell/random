@@ -1,0 +1,6 @@
+os:
+  - Visual Studio 2019
+
+build_script:
+  - cmake .
+  - cmake --build .

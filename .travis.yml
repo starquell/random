@@ -22,10 +22,10 @@ matrix:
                 - ubuntu-toolchain-r-test
                 - llvm-toolchain-trusty-7.0
               packages:
-                - clang-7.0
+                - clang-7
                 - cmake
         env:
-           - MATRIX_EVAL="CC=clang-7.0 && CXX=clang++-7.0"
+           - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
 
       - os: osx
         osx_image: xcode11.1
@@ -33,7 +33,7 @@ matrix:
       - os: osx
         osx_image: xcode8
         env:
-           - MATRIX_EVAL="brew install gcc9 && CC=gcc-9 && CXX=g++-9"
+           - MATRIX_EVAL="brew install gcc-9 && CC=gcc-9 && CXX=g++-9"
 
 before_install:
   - eval "${MATRIX_EVAL}"
