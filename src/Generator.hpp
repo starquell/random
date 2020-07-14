@@ -12,6 +12,7 @@
 #include <atomic>
 #include <variant>
 #include <utility>
+#include <cstdint>
 
 namespace strq {
 
@@ -34,11 +35,15 @@ namespace strq {
         {
             std::mt19937 gen{std::random_device{}()};
 
-            if constexpr (std::is_same_v<Dist, detail::NoDistribution>) {
-                return std::uniform_int_distribution<T>{}(gen);
+            if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t>) {
+                return static_cast<T>(random<int>(schema));
             }
             else {
-                return schema.distribution()(gen);
+                if constexpr (std::is_same_v<Dist, detail::NoDistribution>) {
+                    return std::uniform_int_distribution<T>{}(gen);
+                } else {
+                    return schema.distribution()(gen);
+                }
             }
         }
     };
