@@ -30,10 +30,10 @@ matrix:
       - os: osx
         osx_image: xcode11.1
 
-      - os: osx
-        osx_image: xcode8
-        env:
-           - MATRIX_EVAL="brew install gcc-9 && CC=gcc-9 && CXX=g++-9"
+#      - os: osx
+#        osx_image: xcode8
+#        env:
+#           - MATRIX_EVAL="brew install gcc-9 && CC=gcc-9 && CXX=g++-9"
 
 before_install:
   - eval "${MATRIX_EVAL}"

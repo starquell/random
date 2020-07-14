@@ -9,6 +9,9 @@
 #include <random>
 #include <functional>
 #include <complex>
+#include <atomic>
+#include <variant>
+#include <utility>
 
 namespace strq {
 

@@ -3,6 +3,12 @@
 #include "Meta/GeneralTraits.hpp"
 #include "Schema.hpp"
 
+#include <optional>
+#include <complex>
+#include <atomic>
+#include <variant>
+#include <utility>
+
 namespace strq::detail {
 
     static constexpr std::size_t DEFAULT_CONTAINER_SIZE = 1;
