@@ -5,6 +5,7 @@
 #include <stack>
 #include <queue>
 #include <memory>
+#include <variant>
 
 int main () {
 
