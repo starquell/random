@@ -84,3 +84,4 @@ In this cast, schema for inner tuple will be like `strq::Compound {strq::Arithme
 
 `strq::Default` schema for type T tells that we want random T like result of `strq::random<T>()`.
 
+Other usefull examples can be found in `examples.cpp`.
